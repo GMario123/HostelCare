@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HostelCare | Student Registration</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .register-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #e0eaff, #f7f9ff, #dff7f1);
+      font-family: Arial, sans-serif;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 440px;
+      box-sizing: border-box;
+      background: #fff;
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 15px 45px rgba(30, 55, 100, .13);
+    }
+
+    .register-logo {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 12px;
+      border-radius: 17px;
+      background: #e6edff;
+      font-size: 30px;
+    }
+
+    .register-card h1,
+    .register-subtitle {
+      text-align: center;
+    }
+
+    .register-card h1 {
+      margin-bottom: 8px;
+      color: #19345c;
+    }
+
+    .register-subtitle {
+      color: #718096;
+      margin-bottom: 25px;
+    }
+
+    .register-field {
+      margin-bottom: 16px;
+    }
+
+    .register-field label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: #344767;
+    }
+
+    .register-field input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #dce3ef;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+
+    .register-submit {
+      width: 100%;
+      padding: 13px;
+      background: #2457d6;
+      color: white;
+      border: none;
+      border-radius: 9px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .register-submit:hover {
+      background: #1945b5;
+    }
+
+    .register-message {
+      text-align: center;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .register-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="register-page">
+    <section class="register-card">
+      <div class="register-logo">🏠</div>
+
+      <h1>Create Student Account</h1>
+      <p class="register-subtitle">
+        Join HostelCare to manage your hostel complaints
+      </p>
+
+      <form id="registerForm">
+        <div class="register-field">
+          <label for="studentName">Full Name</label>
+          <input id="studentName" name="name" type="text"
+                 placeholder="Enter your full name"
+                 autocomplete="name" maxlength="80" required>
+        </div>
+
+        <div class="register-field">
+          <label for="studentEmail">Email Address</label>
+          <input id="studentEmail" name="email" type="email"
+                 placeholder="Enter your email"
+                 autocomplete="email" required>
+        </div>
+
+        <div class="register-field">
+          <label for="roomNumber">Room Number</label>
+          <input id="roomNumber" name="roomNumber" type="text"
+                 placeholder="Example: A-204"
+                 maxlength="20" required>
+        </div>
+
+        <div class="register-field">
+          <label for="studentPassword">Password</label>
+          <input id="studentPassword" name="password" type="password"
+                 placeholder="At least 8 characters"
+                 autocomplete="new-password"
+                 minlength="8" maxlength="72" required>
+        </div>
+
+        <div class="register-field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input id="confirmPassword" type="password"
+                 placeholder="Re-enter your password"
+                 autocomplete="new-password"
+                 minlength="8" maxlength="72" required>
+        </div>
+
+        <button class="register-submit" type="submit">
+          Create Account
+        </button>
+
+        <p id="registerMessage" class="register-message"
+           role="status"></p>
+      </form>
+
+      <p class="register-footer">
+        Already have an account?
+        <a href="login.html">Sign In</a>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+    const registerMessage = document.getElementById("registerMessage");
+
+    registerForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      registerMessage.textContent = "";
+
+      const name = document.getElementById("studentName").value.trim();
+      const email = document.getElementById("studentEmail").value.trim();
+      const roomNumber = document.getElementById("roomNumber").value.trim();
+      const password = document.getElementById("studentPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        registerMessage.textContent = "Passwords do not match.";
+        registerMessage.style.color = "#c62828";
+        return;
+      }
+
+      if (password.length < 8 || password.length > 72) {
+        registerMessage.textContent =
+          "Password must be between 8 and 72 characters.";
+        registerMessage.style.color = "#c62828";
+        return;
+      }
+
+      try {
+        registerMessage.textContent = "Creating your account...";
+        registerMessage.style.color = "#43516b";
+
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, roomNumber, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Registration failed.");
+        }
+
+        registerMessage.textContent =
+          "Account created successfully! Redirecting to login...";
+        registerMessage.style.color = "#16803c";
+
+        registerForm.reset();
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1200);
+      } catch (error) {
+        registerMessage.textContent =
+          error.message || "Unable to connect to the server.";
+        registerMessage.style.color = "#c62828";
+      }
+    });
+  </script>
+</body>
+</html>

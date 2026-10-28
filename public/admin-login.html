@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator Login | HostelCare</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-login-card {
+      width: 100%;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 32px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(15,23,42,.10);
+    }
+    .admin-login-card h1 { color: #1d4ed8; margin-bottom: 8px; }
+    .admin-login-card .subtitle { color: #64748b; margin-bottom: 24px; }
+    .admin-login-card label { display:block; margin:16px 0 7px; font-weight:600; }
+    .admin-login-card input {
+      width:100%; padding:12px; border:1px solid #cbd5e1;
+      border-radius:8px; font-size:15px;
+    }
+    .admin-login-card button {
+      width:100%; padding:13px; margin-top:18px;
+      border:0; border-radius:8px; background:#1d4ed8;
+      color:white; font-size:16px; font-weight:bold; cursor:pointer;
+    }
+    .admin-login-card button:disabled { opacity:.65; cursor:wait; }
+    #adminLoginMessage { margin-top:14px; color:#b91c1c; }
+    .admin-links { margin-top:20px; text-align:center; }
+    .admin-links a { color:#2563eb; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <main class="admin-login-card">
+    <a href="index.html">← Back to Home</a>
+    <h1>🏠 HostelCare</h1>
+    <p class="subtitle">Administrator Portal · Sign in to manage complaints</p>
+
+    <form id="adminLoginForm">
+      <label for="adminEmail">Administrator Email</label>
+      <input
+        type="email"
+        id="adminEmail"
+        name="email"
+        placeholder="Enter administrator email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="adminPassword">Password</label>
+      <input
+        type="password"
+        id="adminPassword"
+        name="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      >
+
+      <p id="adminLoginMessage" role="alert" aria-live="polite"></p>
+      <button type="submit" id="adminLoginButton">Sign In as Administrator</button>
+    </form>
+
+    <div class="admin-links">
+      Student? <a href="student-login.html">Student Login</a>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById("adminLoginForm");
+    const message = document.getElementById("adminLoginMessage");
+    const button = document.getElementById("adminLoginButton");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.textContent = "";
+      button.disabled = true;
+      button.textContent = "Signing in...";
+
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value;
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ email, password, role: "admin" })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Administrator login failed.");
+        }
+
+        if (result.role !== "admin") {
+          throw new Error("This account does not have administrator access.");
+        }
+
+        window.location.href = "/admin-dashboard.html";
+      } catch (error) {
+        message.textContent = error.message || "Unable to connect to the server.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Sign In as Administrator";
+      }
+    });
+  </script>
+</body>
+</html>

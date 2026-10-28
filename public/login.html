@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HostelCare | Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #eef2ff, #f8fafc);
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 15px 45px #1e3a8a20;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1d4ed8;
+      margin: 0 0 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 26px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 15px 0 7px;
+      color: #334155;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #93c5fd;
+      border-color: #2563eb;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #loginMessage {
+      text-align: center;
+      color: #dc2626;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🏠 HostelCare</h1>
+    <p class="subtitle">Login to your account</p>
+
+    <form id="commonLoginForm">
+      <label for="loginRole">Login As</label>
+      <select id="loginRole" name="role" required>
+        <option value="student">Student Login</option>
+        <option value="admin">Administrator Login</option>
+      </select>
+
+      <label for="loginEmail">Email Address</label>
+      <input
+        id="loginEmail"
+        name="email"
+        type="email"
+        placeholder="Enter your email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="loginPassword">Password</label>
+      <input
+        id="loginPassword"
+        name="password"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit">Login</button>
+
+      <p id="loginMessage" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="links">
+      <a id="registerLink" href="/student-register.html">
+        New student? Create an account
+      </a>
+    </div>
+  </div>
+
+  <script src="/login.js"></script>
+</body>
+</html>

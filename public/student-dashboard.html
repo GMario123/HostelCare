@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | HostelCare</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f4f7fb;
+      color: #202b3c;
+      font-family: Arial, sans-serif;
+    }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 235px;
+      background: #14213d;
+      color: white;
+      padding: 25px 16px;
+      flex-shrink: 0;
+    }
+    .brand { font-size: 25px; font-weight: bold; margin-bottom: 8px; }
+    .brand span { color: #52d6a0; }
+    .side-subtitle { color: #b9c6da; font-size: 13px; margin-bottom: 35px; }
+    .nav-btn {
+      width: 100%;
+      border: 0;
+      padding: 13px;
+      margin: 5px 0;
+      text-align: left;
+      color: #e8edf7;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .nav-btn:hover, .nav-btn.active { background: #293d60; color: white; }
+    .sidebar .logout { margin-top: 35px; color: #ffb9b9; }
+    .main { flex: 1; min-width: 0; padding: 28px; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    h1 { font-size: 27px; margin: 0 0 8px; }
+    .muted { color: #758197; font-size: 14px; }
+    .user-pill {
+      background: white;
+      border: 1px solid #e4e9f1;
+      border-radius: 30px;
+      padding: 12px 17px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 17px;
+      margin-bottom: 25px;
+    }
+    .card, .panel {
+      background: white;
+      border: 1px solid #e8edf4;
+      border-radius: 13px;
+      padding: 22px;
+      box-shadow: 0 4px 14px #182b4508;
+    }
+    .card-label { color: #758197; font-size: 14px; }
+    .card-number { font-size: 30px; font-weight: bold; margin-top: 13px; }
+    .panel { margin-bottom: 20px; }
+    .panel h2 { font-size: 19px; margin: 0 0 18px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 13px 0 7px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d8e0eb;
+      border-radius: 8px;
+      font: inherit;
+      background: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #bfdbfe;
+      border-color: #176bce;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .primary {
+      background: #176bce;
+      color: white;
+      border: 0;
+      padding: 12px 17px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 17px;
+    }
+    .primary:hover { background: #1055a6; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .message { margin-top: 14px; font-size: 14px; overflow-wrap: anywhere; }
+    .success { color: #15803d; }
+    .error { color: #dc2626; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th, td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #edf0f5;
+      text-align: left;
+      font-size: 13px;
+    }
+    th { color: #68758b; background: #f8fafd; }
+    .status {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 6px 9px;
+      background: #fff2d8;
+      color: #946200;
+      font-size: 12px;
+    }
+    .status.resolved { background: #dcfce7; color: #166534; }
+    .status.progress { background: #dbeafe; color: #1d4ed8; }
+    .welcome {
+      background: linear-gradient(120deg,#176bce,#24417a);
+      color: white;
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 23px;
+    }
+    .welcome p { color: #e3edff; margin-bottom: 0; }
+    .quick-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .quick-actions button { margin-top: 0; }
+    .empty { color: #758197; padding: 18px 10px; }
+    .tracking-card {
+      margin-top: 15px;
+      padding: 16px;
+      border: 1px solid #e4e9f1;
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 760px) {
+      .layout { display: block; }
+      .sidebar { width: 100%; padding: 18px; }
+      .side-subtitle { margin-bottom: 12px; }
+      .nav-btn { width: auto; display: inline-block; padding: 10px; }
+      .sidebar .logout { margin-top: 5px; }
+      .main { padding: 17px; }
+      .cards { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; gap: 0; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Hostel<span>Care</span></div>
+    <div class="side-subtitle">Student Portal</div>
+
+    <button class="nav-btn active" data-section="dashboard">▦ Dashboard</button>
+    <button class="nav-btn" data-section="raise">＋ Raise Complaint</button>
+    <button class="nav-btn" data-section="track">⌕ Track Complaint</button>
+    <button class="nav-btn" data-section="complaints">☷ My Complaints</button>
+    <button class="nav-btn logout" id="logoutBtn">↪ Logout</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Student Dashboard</h1>
+        <div class="muted">Manage and track your hostel complaints.</div>
+      </div>
+      <div class="user-pill">👤 <span id="studentName">Loading...</span></div>
+    </header>
+
+    <section class="section active" id="dashboard">
+      <div class="welcome">
+        <h2>Welcome to HostelCare!</h2>
+        <p>Report hostel issues and follow their progress in one place.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Total Complaints</div>
+          <div class="card-number" id="totalCount">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Pending Complaints</div>
+          <div class="card-number" id="pendingCount">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Resolved Complaints</div>
+          <div class="card-number" id="resolvedCount">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Quick Actions</h2>
+        <div class="quick-actions">
+          <button class="primary" data-go="raise">Raise a Complaint</button>
+          <button class="primary" data-go="track">Track a Complaint</button>
+          <button class="primary" data-go="complaints">View My Complaints</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Recent Complaints</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Complaint ID</th><th>Category</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentRows">
+              <tr><td colspan="4">Loading complaints...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="raise">
+      <div class="panel">
+        <h2>Raise a New Complaint</h2>
+        <p class="muted">Enter the details below to report a hostel issue.</p>
+
+        <form id="complaintForm">
+          <div>
+            <label for="complaintStudentName">Student Name</label>
+            <input
+              type="text"
+              id="complaintStudentName"
+              name="studentName"
+              maxlength="60"
+              readonly
+              required
+              placeholder="Loading your name..."
+            >
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="roomNumber">Room Number</label>
+              <input id="roomNumber" name="roomNumber"
+                     maxlength="15" required placeholder="e.g. A-204">
+            </div>
+            <div>
+              <label for="category">Complaint Category</label>
+              <select id="category" name="category" required>
+                <option value="">Select category</option>
+                <option>Electrical</option>
+                <option>Plumbing / Water</option>
+                <option>Wi-Fi / Internet</option>
+                <option>Room Cleaning</option>
+                <option>Furniture</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority" required>
+            <option value="">Select priority</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+
+          <label for="description">Complaint Description</label>
+          <textarea id="description" name="description"
+                    maxlength="1000" required
+                    placeholder="Explain the issue clearly..."></textarea>
+
+          <button class="primary" type="submit">Submit Complaint</button>
+          <div class="message" id="submitMessage" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="track">
+      <div class="panel">
+        <h2>Track Your Complaint</h2>
+        <p class="muted">Enter the Complaint ID you received after submitting.</p>
+        <form id="trackForm">
+          <label for="trackId">Complaint ID</label>
+          <input id="trackId" required placeholder="e.g. HC-A1B2C3D4">
+          <button class="primary" type="submit">Track Complaint</button>
+        </form>
+        <div id="trackResult" class="message" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section" id="complaints">
+      <div class="panel">
+        <h2>My Complaints</h2>
+        <button class="primary" id="refreshBtn">Refresh Complaints</button>
+        <div class="table-wrap" style="margin-top:18px">
+          <table>
+            <thead>
+              <tr>
+                <th>Complaint ID</th><th>Category</th><th>Priority</th>
+                <th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="allRows">
+              <tr><td colspan="5">Loading complaints...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="listMessage" class="message" role="status"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const API = "/api/complaints";
+  let complaints = [];
+  let currentStudent = null;
+
+  const $ = id => document.getElementById(id);
+
+  async function apiFetch(url, options = {}) {
+    const response = await fetch(url, {
+      credentials: "same-origin",
+      ...options,
+      headers: {
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      window.location.href = "student-login.html";
+      throw new Error("Your session expired. Please log in again.");
+    }
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.message || `Request failed (${response.status}).`);
+    }
+
+    return data;
+  }
+
+  function showSection(name) {
+    document.querySelectorAll(".section").forEach(section => {
+      section.classList.toggle("active", section.id === name);
+    });
+
+    document.querySelectorAll(".nav-btn[data-section]").forEach(button => {
+      button.classList.toggle("active", button.dataset.section === name);
+    });
+
+    const titles = {
+      dashboard: "Student Dashboard",
+      raise: "Raise Complaint",
+      track: "Track Complaint",
+      complaints: "My Complaints"
+    };
+
+    $("pageTitle").textContent = titles[name] || "Student Dashboard";
+
+    if (name === "complaints" || name === "dashboard") {
+      loadComplaints();
+    }
+  }
+
+  document.querySelectorAll(".nav-btn[data-section]").forEach(button => {
+    button.addEventListener("click", () => showSection(button.dataset.section));
+  });
+
+  document.querySelectorAll("[data-go]").forEach(button => {
+    button.addEventListener("click", () => showSection(button.dataset.go));
+  });
+
+  function safeText(value) {
+    return String(value ?? "");
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
+  }
+
+  function statusClass(status) {
+    if (status === "Resolved") return "resolved";
+    if (status === "In Progress") return "progress";
+    return "";
+  }
+
+  function makeCell(value) {
+    const td = document.createElement("td");
+    td.textContent = safeText(value);
+    return td;
+  }
+
+  function makeStatusCell(status) {
+    const td = document.createElement("td");
+    const span = document.createElement("span");
+    span.className = "status " + statusClass(status);
+    span.textContent = safeText(status || "Pending");
+    td.appendChild(span);
+    return td;
+  }
+
+  function renderTables() {
+    $("totalCount").textContent = complaints.length;
+    $("pendingCount").textContent =
+      complaints.filter(c => c.status === "Pending").length;
+    $("resolvedCount").textContent =
+      complaints.filter(c => c.status === "Resolved").length;
+
+    const recent = $("recentRows");
+    const all = $("allRows");
+    recent.replaceChildren();
+    all.replaceChildren();
+
+    if (!complaints.length) {
+      recent.innerHTML = '<tr><td colspan="4">No complaints submitted yet.</td></tr>';
+      all.innerHTML = '<tr><td colspan="5">No complaints submitted yet.</td></tr>';
+      return;
+    }
+
+    complaints.slice(0, 5).forEach(item => {
+      const row = document.createElement("tr");
+      row.append(
+        makeCell(item.complaintId),
+        makeCell(item.category),
+        makeCell(formatDate(item.createdAt)),
+        makeStatusCell(item.status)
+      );
+      recent.appendChild(row);
+    });
+
+    complaints.forEach(item => {
+      const row = document.createElement("tr");
+      row.append(
+        makeCell(item.complaintId),
+        makeCell(item.category),
+        makeCell(item.priority),
+        makeCell(formatDate(item.createdAt)),
+        makeStatusCell(item.status)
+      );
+      all.appendChild(row);
+    });
+  }
+
+  async function loadComplaints() {
+    try {
+      const data = await apiFetch(API);
+      complaints = Array.isArray(data.complaints) ? data.complaints : [];
+      renderTables();
+      $("listMessage").textContent = "";
+    } catch (error) {
+      $("listMessage").textContent = error.message;
+      $("recentRows").innerHTML =
+        '<tr><td colspan="4">Unable to load complaints. Please try again.</td></tr>';
+      $("allRows").innerHTML =
+        '<tr><td colspan="5">Unable to load complaints. Please try again.</td></tr>';
+    }
+  }
+
+  async function loadStudent() {
+    try {
+      const data = await apiFetch("/api/auth/me");
+      const user = data.user || data;
+
+      if (user.role && user.role !== "student") {
+        window.location.href = "admin-dashboard.html";
+        return;
+      }
+
+      currentStudent = user;
+      $("studentName").textContent = user.name || user.email || "Student";
+      $("complaintStudentName").value = user.name || "";
+    } catch (error) {
+      $("studentName").textContent = "Student";
+      $("submitMessage").textContent = error.message;
+      $("submitMessage").className = "message error";
+    }
+  }
+
+  $("complaintForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const button = event.submitter;
+    const message = $("submitMessage");
+
+    if (!currentStudent) {
+      message.textContent = "Student session not loaded. Please log in again.";
+      message.className = "message error";
+      return;
+    }
+
+    if (!$("complaintForm").reportValidity()) return;
+
+    button.disabled = true;
+    button.textContent = "Submitting...";
+    message.textContent = "";
+
+    const payload = {
+      studentName: $("complaintStudentName").value.trim(),
+      roomNumber: $("roomNumber").value.trim(),
+      category: $("category").value,
+      priority: $("priority").value,
+      description: $("description").value.trim()
+    };
+
+    try {
+      const data = await apiFetch(API, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      message.textContent =
+        (data.message || "Complaint submitted successfully.") +
+        (data.complaint?.complaintId
+          ? " Complaint ID: " + data.complaint.complaintId
+          : "");
+      message.className = "message success";
+
+      $("complaintForm").reset();
+      $("complaintStudentName").value = currentStudent.name || "";
+      await loadComplaints();
+    } catch (error) {
+      message.textContent = error.message;
+      message.className = "message error";
+    } finally {
+      button.disabled = false;
+      button.textContent = "Submit Complaint";
+    }
+  });
+
+  $("trackForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const result = $("trackResult");
+    result.textContent = "Searching...";
+
+    const id = $("trackId").value.trim().toUpperCase();
+
+    if (!id) {
+      result.textContent = "Please enter a complaint ID.";
+      return;
+    }
+
+    try {
+      const data = await apiFetch(API + "/track/" + encodeURIComponent(id));
+      const c = data.complaint;
+
+      result.replaceChildren();
+
+      const card = document.createElement("div");
+      card.className = "tracking-card";
+
+      const heading = document.createElement("h3");
+      heading.textContent = "Complaint Details";
+      card.appendChild(heading);
+
+      [
+        ["Complaint ID", c.complaintId],
+        ["Student Name", c.studentName],
+        ["Category", c.category],
+        ["Room Number", c.roomNumber],
+        ["Priority", c.priority],
+        ["Description", c.description],
+        ["Status", c.status],
+        ["Submitted On", formatDate(c.createdAt)]
+      ].forEach(([label, value]) => {
+        const p = document.createElement("p");
+        const strong = document.createElement("strong");
+        strong.textContent = label + ": ";
+        p.append(strong, document.createTextNode(safeText(value || "Not available")));
+        card.appendChild(p);
+      });
+
+      result.appendChild(card);
+    } catch (error) {
+      result.textContent = error.message;
+      result.className = "message error";
+    }
+  });
+
+  $("refreshBtn").addEventListener("click", loadComplaints);
+
+  $("logoutBtn").addEventListener("click", async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "same-origin"
+      });
+    } finally {
+      window.location.href = "student-login.html";
+    }
+  });
+
+  async function initializeDashboard() {
+    await loadStudent();
+    if (currentStudent) {
+      await loadComplaints();
+    }
+  }
+
+  initializeDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HostelCare | Admin Dashboard</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --navy:#172554;--blue:#2563eb;--bg:#f1f5f9;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:245px;background:#0f172a;color:white;padding:25px 16px;
+  display:flex;flex-direction:column;flex-shrink:0
+}
+.brand{font-size:23px;font-weight:bold;padding:5px 10px 8px}
+.brand-sub{font-size:12px;color:#94a3b8;padding:0 10px 28px}
+.nav-label{font-size:11px;color:#94a3b8;padding:10px;font-weight:bold;letter-spacing:1px}
+.nav-btn{
+  display:flex;align-items:center;gap:11px;width:100%;padding:13px 12px;
+  margin-bottom:5px;border:0;border-radius:8px;background:transparent;
+  color:#cbd5e1;text-align:left;font-size:14px
+}
+.nav-btn:hover,.nav-btn.active{background:#1e3a8a;color:white}
+.nav-icon{width:22px;text-align:center;font-size:17px}
+.sidebar-bottom{margin-top:auto;padding-top:25px}
+.logout{background:#dc2626;color:white}
+.logout:hover{background:#b91c1c}
+.main{flex:1;min-width:0}
+.topbar{
+  min-height:88px;background:white;padding:18px 28px;display:flex;
+  justify-content:space-between;align-items:center;gap:15px;
+  border-bottom:1px solid var(--border)
+}
+.topbar h1{font-size:23px;margin:0}
+.topbar p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.top-actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{padding:10px 14px;border:0;border-radius:7px;background:var(--blue);color:white}
+.btn:hover{opacity:.88}
+.btn-light{background:#e2e8f0;color:#1e293b}
+.content{padding:26px;max-width:1600px;margin:auto}
+.page{display:none}
+.page.active{display:block}
+.section-title{margin:0 0 7px;font-size:22px}
+.section-sub{color:var(--muted);margin:0 0 22px;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.stat,.panel{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 14px #0f172a0b}
+.stat{border-top:4px solid var(--blue)}
+.stat h3{margin:0;color:var(--muted);font-size:13px;font-weight:600}
+.stat p{font-size:30px;font-weight:bold;margin:12px 0 0}
+.stat small{color:var(--muted)}
+.panel{margin-bottom:22px;min-width:0}
+.panel h2{font-size:18px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:13px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.toolbar input,.toolbar select{
+  border:1px solid #cbd5e1;background:white;padding:10px 12px;
+  border-radius:7px;min-width:150px;max-width:100%
+}
+.toolbar input{flex:1;min-width:200px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+th{background:#f8fafc;color:#475569;white-space:nowrap}
+tbody tr:hover{background:#f8fafc}
+.status{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px;max-width:145px}
+.priority{font-weight:bold}
+#message,#historyMessage{margin:12px 0;font-size:13px;color:#475569}
+.empty{text-align:center;padding:28px;color:var(--muted)}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.quick-card{border:1px solid var(--border);border-radius:10px;padding:17px}
+.quick-card h3{margin:0 0 8px;font-size:15px}
+.quick-card p{color:var(--muted);font-size:13px;line-height:1.5}
+.quick-card button{margin-top:8px}
+.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:11px;background:#dbeafe;color:#1d4ed8}
+.footer-note{color:var(--muted);font-size:12px;margin-top:15px}
+@media(max-width:1000px){
+ .sidebar{width:210px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .content{padding:18px}
+}
+@media(max-width:650px){
+ .layout{display:block}
+ .sidebar{width:100%;padding:15px}
+ .brand{font-size:20px}
+ .brand-sub{padding-bottom:12px}
+ .nav-label{display:none}
+ .nav-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+ .nav-btn{margin:0;padding:11px 8px;font-size:12px}
+ .sidebar-bottom{margin-top:12px;padding-top:0}
+ .topbar{padding:16px;align-items:flex-start}
+ .topbar h1{font-size:20px}
+ .content{padding:14px}
+ .stats{gap:10px}
+ .stat{padding:15px}
+ .stat p{font-size:25px}
+ .quick-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="brand">🏠 HostelCare</div>
+  <div class="brand-sub">ADMINISTRATION PANEL</div>
+
+  <div class="nav-label">MAIN MENU</div>
+  <nav class="nav-list">
+    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+    <button class="nav-btn" data-page="complaints"><span class="nav-icon">▤</span>All Complaints</button>
+    <button class="nav-btn" data-page="pending"><span class="nav-icon">◷</span>Pending</button>
+    <button class="nav-btn" data-page="progress"><span class="nav-icon">↻</span>In Progress</button>
+    <button class="nav-btn" data-page="resolved"><span class="nav-icon">✓</span>Resolved</button>
+    <button class="nav-btn" data-page="history"><span class="nav-icon">◷</span>Login History</button>
+    <button class="nav-btn" data-page="reports"><span class="nav-icon">▥</span>Reports & Analytics</button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="nav-btn logout" id="logoutBtn"><span class="nav-icon">⇥</span>Logout</button>
+  </div>
+</aside>
+
+<div class="main">
+<header class="topbar">
+  <div>
+    <h1 id="pageTitle">Dashboard</h1>
+    <p>HostelCare · Manage and monitor hostel complaints</p>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-light" id="refreshBtn">↻ Refresh</button>
+  </div>
+</header>
+
+<main class="content">
+
+<!-- DASHBOARD -->
+<section class="page active" id="page-dashboard">
+  <h2 class="section-title">Overview</h2>
+  <p class="section-sub">Summary of complaints and user activity.</p>
+
+  <div class="stats">
+    <div class="stat"><h3>Total Complaints</h3><p id="total">0</p><small>All recorded complaints</small></div>
+    <div class="stat"><h3>Pending</h3><p id="pendingCount">0</p><small>Awaiting action</small></div>
+    <div class="stat"><h3>In Progress</h3><p id="progressCount">0</p><small>Being addressed</small></div>
+    <div class="stat"><h3>Resolved</h3><p id="resolvedCount">0</p><small>Marked resolved</small></div>
+  </div>
+
+  <div class="panel">
+    <h2>Quick Actions</h2>
+    <p class="muted">Open a section to manage records.</p>
+    <div class="quick-grid">
+      <div class="quick-card">
+        <h3>📋 Student Complaints</h3>
+        <p>Review submitted complaints and update their status.</p>
+        <button class="btn" data-go="complaints">View Complaints</button>
+      </div>
+      <div class="quick-card">
+        <h3>🔐 Login History</h3>
+        <p>Review recorded successful logins for student and admin accounts.</p>
+        <button class="btn" data-go="history">View Login History</button>
+      </div>
+      <div class="quick-card">
+        <h3>📊 Reports & Analytics</h3>
+        <p>See complaint counts by status, category and priority.</p>
+        <button class="btn" data-go="reports">View Reports</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Recent Complaints</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Complaint ID</th><th>Student</th><th>Category</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody id="recentBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ALL COMPLAINTS -->
+<section class="page" id="page-complaints">
+  <h2 class="section-title">Student Complaints</h2>
+  <p class="section-sub">Search complaints and change their status.</p>
+  <div class="panel">
+    <div class="toolbar">
+      <input id="complaintSearch" placeholder="Search ID, student, room or description..." aria-label="Search complaints">
+      <select id="categoryFilter" aria-label="Filter by category">
+        <option value="">All Categories</option>
+        <option>Electrical</option>
+        <option>Plumbing / Water</option>
+        <option>Wi-Fi / Internet</option>
+        <option>Room Cleaning</option>
+        <option>Furniture</option>
+        <option>Other</option>
+      </select>
+      <select id="priorityFilter" aria-label="Filter by priority">
+        <option value="">All Priorities</option>
+        <option>Low</option><option>Medium</option><option>High</option>
+      </select>
+    </div>
+    <div id="message" role="status">Loading complaints...</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Complaint ID</th><th>Student</th><th>Room</th><th>Category</th><th>Priority</th><th>Description</th><th>Date</th><th>Status</th></tr>
+        </thead>
+        <tbody id="complaintsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- STATUS FILTER PAGES -->
+<section class="page" id="page-pending">
+  <h2 class="section-title">Pending Complaints</h2>
+  <p class="section-sub">Complaints that still need attention.</p>
+  <div class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Complaint ID</th><th>Student</th><th>Room</th><th>Category</th><th>Priority</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody id="pendingBody"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="page" id="page-progress">
+  <h2 class="section-title">In Progress</h2>
+  <p class="section-sub">Complaints currently being addressed.</p>
+  <div class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Complaint ID</th><th>Student</th><th>Room</th><th>Category</th><th>Priority</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody id="progressBody"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="page" id="page-resolved">
+  <h2 class="section-title">Resolved Complaints</h2>
+  <p class="section-sub">Complaints marked as resolved.</p>
+  <div class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Complaint ID</th><th>Student</th><th>Room</th><th>Category</th><th>Priority</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody id="resolvedBody"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- LOGIN HISTORY -->
+<section class="page" id="page-history">
+  <h2 class="section-title">User Login History</h2>
+  <p class="section-sub">Successful login events recorded by the application. Times use your browser's local time zone.</p>
+
+  <div class="stats">
+    <div class="stat"><h3>Recorded Logins</h3><p id="historyTotal">0</p><small>Up to 500 recent records</small></div>
+    <div class="stat"><h3>Student Logins</h3><p id="studentLogins">0</p><small>In the records loaded</small></div>
+    <div class="stat"><h3>Admin Logins</h3><p id="adminLogins">0</p><small>In the records loaded</small></div>
+    <div class="stat"><h3>Latest Login</h3><p id="latestLogin" style="font-size:17px">—</p><small>Most recent recorded event</small></div>
+  </div>
+
+  <div class="panel">
+    <h2>Login Records</h2>
+    <p class="muted">Only successful logins recorded after login-history tracking was added will appear.</p>
+    <div class="toolbar">
+      <input id="historySearch" placeholder="Search name or email..." aria-label="Search login history">
+      <select id="roleFilter" aria-label="Filter by role">
+        <option value="">All Roles</option>
+        <option value="student">Student</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button class="btn" id="historyRefresh">Refresh History</button>
+    </div>
+    <div id="historyMessage" role="status">Login history not loaded yet.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Login Date & Time</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+    <p class="footer-note">For privacy, this page shows account details and login timestamps, not passwords or private message contents.</p>
+  </div>
+</section>
+
+<!-- REPORTS -->
+<section class="page" id="page-reports">
+  <h2 class="section-title">Reports & Analytics</h2>
+  <p class="section-sub">Summary of currently loaded complaint records.</p>
+  <div class="stats">
+    <div class="stat"><h3>Total Complaints</h3><p id="reportTotal">0</p></div>
+    <div class="stat"><h3>High Priority</h3><p id="reportHigh">0</p></div>
+    <div class="stat"><h3>Resolution Rate</h3><p id="reportRate">0%</p></div>
+    <div class="stat"><h3>Categories</h3><p id="reportCategories">0</p></div>
+  </div>
+  <div class="panel">
+    <h2>Complaints by Category</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Total</th><th>Pending</th><th>In Progress</th><th>Resolved</th></tr></thead>
+        <tbody id="categoryReportBody"></tbody>
+      </table>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="exportBtn">Export Complaints CSV</button>
+    </div>
+    <p class="footer-note">Reports reflect the complaint records returned by the server, up to its configured limit.</p>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const state = { complaints: [], history: [] };
+const allowedStatuses = ["Pending", "In Progress", "Resolved"];
+const pageTitles = {
+  dashboard:"Dashboard", complaints:"All Complaints", pending:"Pending Complaints",
+  progress:"In Progress", resolved:"Resolved Complaints",
+  history:"Login History", reports:"Reports & Analytics"
+};
+
+function addCell(row, value) {
+  const cell = document.createElement("td");
+  cell.textContent = value == null ? "" : String(value);
+  row.appendChild(cell);
+  return cell;
+}
+
+function emptyRow(tbody, message, colspan) {
+  const row = document.createElement("tr");
+  const cell = addCell(row, message);
+  cell.colSpan = colspan;
+  cell.className = "empty";
+  tbody.replaceChildren(row);
+}
+
+function dateText(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString();
+}
+
+function shortDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
+}
+
+function showPage(name) {
+  if (!pageTitles[name]) return;
+  document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+  $("page-" + name).classList.add("active");
+  document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === name);
+  });
+  $("pageTitle").textContent = pageTitles[name];
+
+  if (name === "history") loadHistory();
+  if (name === "reports") renderReports();
+}
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.go));
+});
+
+async function checkAdminSession() {
+  const response = await fetch("/api/auth/me", { credentials:"same-origin" });
+  if (!response.ok) {
+    window.location.href = "/admin-login.html";
+    return false;
+  }
+  const data = await response.json();
+  if (!data.success || !data.user || data.user.role !== "admin") {
+    window.location.href = "/admin-login.html";
+    return false;
+  }
+  return true;
+}
+
+async function loadComplaints() {
+  $("message").textContent = "Loading complaints...";
+
+  try {
+    const response = await fetch("/api/complaints/admin/all", {
+      credentials:"same-origin"
+    });
+    const data = await response.json();
+
+    if (response.status === 401 || response.status === 403) {
+      window.location.href = "/admin-login.html";
+      return;
+    }
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Could not load complaints.");
+    }
+
+    state.complaints = data.complaints || [];
+    renderComplaints();
+    renderStats();
+    renderRecent();
+    renderReports();
+    $("message").textContent = "Showing " + state.complaints.length + " complaint(s).";
+  } catch (error) {
+    $("message").textContent = error.message;
+  }
+}
+
+function renderStats() {
+  const all = state.complaints;
+  $("total").textContent = all.length;
+  $("pendingCount").textContent = all.filter(c => c.status === "Pending").length;
+  $("progressCount").textContent = all.filter(c => c.status === "In Progress").length;
+  $("resolvedCount").textContent = all.filter(c => c.status === "Resolved").length;
+}
+
+function createStatusSelect(complaint) {
+  const select = document.createElement("select");
+  select.className = "status";
+  for (const status of allowedStatuses) {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status;
+    select.appendChild(option);
+  }
+  select.value = allowedStatuses.includes(complaint.status) ? complaint.status : "Pending";
+
+  select.addEventListener("change", async () => {
+    const newStatus = select.value;
+    select.disabled = true;
+    try {
+      const response = await fetch(
+        "/api/complaints/" + encodeURIComponent(complaint._id) + "/status",
+        {
+          method:"PATCH",
+          credentials:"same-origin",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({status:newStatus})
+        }
+      );
+      const result = await response.json();
+
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = "/admin-login.html";
+        return;
+      }
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Status update failed.");
+      }
+
+      $("message").textContent = "Complaint " + complaint.complaintId + " updated successfully.";
+      await loadComplaints();
+    } catch (error) {
+      $("message").textContent = error.message;
+      select.value = complaint.status || "Pending";
+      select.disabled = false;
+    }
+  });
+  return select;
+}
+
+function filteredComplaints(statusFilter) {
+  const search = $("complaintSearch").value.trim().toLowerCase();
+  const category = $("categoryFilter").value;
+  const priority = $("priorityFilter").value;
+
+  return state.complaints.filter(c => {
+    const matchesStatus = !statusFilter || c.status === statusFilter;
+    const searchable = [
+      c.complaintId, c.studentName, c.roomNumber, c.category, c.description
+    ].join(" ").toLowerCase();
+    return matchesStatus &&
+      (!search || searchable.includes(search)) &&
+      (!category || c.category === category) &&
+      (!priority || c.priority === priority);
+  });
+}
+
+function renderComplaints() {
+  const tbody = $("complaintsBody");
+  tbody.replaceChildren();
+  const list = filteredComplaints("");
+
+  if (!list.length) {
+    emptyRow(tbody, "No matching complaints found.", 8);
+  }
+
+  for (const c of list) {
+    const row = document.createElement("tr");
+    addCell(row, c.complaintId);
+    addCell(row, c.studentName);
+    addCell(row, c.roomNumber);
+    addCell(row, c.category);
+    const priorityCell = addCell(row, c.priority);
+    priorityCell.className = "priority";
+    addCell(row, c.description);
+    addCell(row, shortDate(c.createdAt));
+    const statusCell = document.createElement("td");
+    statusCell.appendChild(createStatusSelect(c));
+    row.appendChild(statusCell);
+    tbody.appendChild(row);
+  }
+
+  renderStatusPage("Pending", "pendingBody");
+  renderStatusPage("In Progress", "progressBody");
+  renderStatusPage("Resolved", "resolvedBody");
+}
+
+function renderStatusPage(status, tbodyId) {
+  const tbody = $(tbodyId);
+  tbody.replaceChildren();
+  const list = state.complaints.filter(c => c.status === status);
+
+  if (!list.length) {
+    emptyRow(tbody, "No " + status.toLowerCase() + " complaints.", 7);
+    return;
+  }
+
+  for (const c of list) {
+    const row = document.createElement("tr");
+    addCell(row, c.complaintId);
+    addCell(row, c.studentName);
+    addCell(row, c.roomNumber);
+    addCell(row, c.category);
+    addCell(row, c.priority);
+    addCell(row, shortDate(c.createdAt));
+    const cell = document.createElement("td");
+    cell.appendChild(createStatusSelect(c));
+    row.appendChild(cell);
+    tbody.appendChild(row);
+  }
+}
+
+function renderRecent() {
+  const tbody = $("recentBody");
+  tbody.replaceChildren();
+  const list = state.complaints.slice(0, 5);
+
+  if (!list.length) {
+    emptyRow(tbody, "No complaints submitted yet.", 5);
+    return;
+  }
+
+  for (const c of list) {
+    const row = document.createElement("tr");
+    addCell(row, c.complaintId);
+    addCell(row, c.studentName);
+    addCell(row, c.category);
+    addCell(row, c.priority);
+    addCell(row, c.status);
+    tbody.appendChild(row);
+  }
+}
+
+async function loadHistory() {
+  $("historyMessage").textContent = "Loading login history...";
+
+  try {
+    const response = await fetch("/api/auth/login-history", {
+      credentials:"same-origin"
+    });
+    const data = await response.json();
+
+    if (response.status === 401 || response.status === 403) {
+      window.location.href = "/admin-login.html";
+      return;
+    }
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Could not load login history.");
+    }
+
+    state.history = data.history || [];
+    $("historyTotal").textContent = state.history.length;
+    $("studentLogins").textContent = state.history.filter(x => x.role === "student").length;
+    $("adminLogins").textContent = state.history.filter(x => x.role === "admin").length;
+    $("latestLogin").textContent = state.history.length
+      ? dateText(state.history[0].loginAt)
+      : "No records";
+
+    renderHistory();
+    $("historyMessage").textContent = "Loaded " + state.history.length + " login record(s).";
+  } catch (error) {
+    $("historyMessage").textContent = error.message;
+  }
+}
+
+function renderHistory() {
+  const tbody = $("historyBody");
+  tbody.replaceChildren();
+
+  const search = $("historySearch").value.trim().toLowerCase();
+  const role = $("roleFilter").value;
+
+  const list = state.history.filter(item => {
+    const searchable = [item.name, item.email].join(" ").toLowerCase();
+    return (!search || searchable.includes(search)) &&
+      (!role || item.role === role);
+  });
+
+  if (!list.length) {
+    emptyRow(
+      tbody,
+      state.history.length
+        ? "No login records match these filters."
+        : "No login history found. A successful login after tracking was enabled should create a record.",
+      4
+    );
+    return;
+  }
+
+  for (const item of list) {
+    const row = document.createElement("tr");
+    addCell(row, item.name);
+    addCell(row, item.email);
+    addCell(row, item.role === "admin" ? "Admin" : "Student");
+    addCell(row, dateText(item.loginAt));
+    tbody.appendChild(row);
+  }
+}
+
+function renderReports() {
+  const all = state.complaints;
+  const resolved = all.filter(c => c.status === "Resolved").length;
+  $("reportTotal").textContent = all.length;
+  $("reportHigh").textContent = all.filter(c => c.priority === "High").length;
+  $("reportRate").textContent = all.length ? Math.round(resolved / all.length * 100) + "%" : "0%";
+
+  const categories = [...new Set(all.map(c => c.category).filter(Boolean))].sort();
+  $("reportCategories").textContent = categories.length;
+
+  const tbody = $("categoryReportBody");
+  tbody.replaceChildren();
+  if (!categories.length) {
+    emptyRow(tbody, "No category data available.", 5);
+    return;
+  }
+
+  for (const category of categories) {
+    const list = all.filter(c => c.category === category);
+    const row = document.createElement("tr");
+    addCell(row, category);
+    addCell(row, list.length);
+    addCell(row, list.filter(c => c.status === "Pending").length);
+    addCell(row, list.filter(c => c.status === "In Progress").length);
+    addCell(row, list.filter(c => c.status === "Resolved").length);
+    tbody.appendChild(row);
+  }
+}
+
+function exportCSV() {
+  const columns = [
+    ["Complaint ID", "complaintId"],
+    ["Student", "studentName"],
+    ["Room", "roomNumber"],
+    ["Category", "category"],
+    ["Priority", "priority"],
+    ["Description", "description"],
+    ["Status", "status"],
+    ["Created At", "createdAt"]
+  ];
+
+  const escapeCSV = value => '"' + String(value ?? "").replace(/"/g, '""') + '"';
+  const lines = [
+    columns.map(col => escapeCSV(col[0])).join(","),
+    ...state.complaints.map(c =>
+      columns.map(col => escapeCSV(c[col[1]])).join(",")
+    )
+  ];
+
+  const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+    type:"text/csv;charset=utf-8;"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "hostelcare-complaints.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+$("complaintSearch").addEventListener("input", renderComplaints);
+$("categoryFilter").addEventListener("change", renderComplaints);
+$("priorityFilter").addEventListener("change", renderComplaints);
+$("historySearch").addEventListener("input", renderHistory);
+$("roleFilter").addEventListener("change", renderHistory);
+$("historyRefresh").addEventListener("click", loadHistory);
+$("refreshBtn").addEventListener("click", async () => {
+  await loadComplaints();
+  if ($("page-history").classList.contains("active")) await loadHistory();
+});
+$("exportBtn").addEventListener("click", exportCSV);
+
+$("logoutBtn").addEventListener("click", async () => {
+  try {
+    await fetch("/api/auth/logout", {
+      method:"POST",
+      credentials:"same-origin"
+    });
+  } finally {
+    window.location.href = "/admin-login.html";
+  }
+});
+
+(async function init() {
+  const isAdmin = await checkAdminSession().catch(() => false);
+  if (!isAdmin) {
+    window.location.href = "/admin-login.html";
+    return;
+  }
+  await loadComplaints();
+})();
+</script>
+</body>
+</html>

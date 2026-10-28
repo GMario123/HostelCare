@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HostelCare | Complaint Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="#" class="logo">
+            <span class="logo-icon">H</span>
+            HostelCare
+        </a>
+
+        
+<nav>
+    <a href="#home">Home</a>
+    <a href="#features">Features</a>
+    <a href="#about">About</a>
+</nav>
+
+<div class="nav-actions">
+    <a href="login.html" class="nav-btn">Login ↗</a>
+</div>
+
+         </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <div class="eyebrow">
+                    <span class="live-dot"></span>
+                    SMART HOSTEL MANAGEMENT
+                </div>
+
+                <h1>Your Hostel.<br>
+                    <span>Your Voice.</span><br>
+                    Our Responsibility.
+                </h1>
+
+                <p>
+                    A smarter way to report hostel issues, track complaints,
+                    and create a better living experience for every student.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#complaint" class="primary-btn">
+                        Submit a Complaint <span>→</span>
+                    </a>
+                    <a href="#features" class="secondary-btn">
+                        Explore Features
+                    </a>
+                </div>
+
+                <div class="trust-note">
+                    <span>✓</span> Simple · Transparent · Student Friendly
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="orb orb-one"></div>
+                <div class="orb orb-two"></div>
+
+                <div class="dashboard-card">
+                    <div class="card-top">
+                        <div>
+                            <small>STUDENT DASHBOARD</small>
+                            <h2>Welcome back!</h2>
+                        </div>
+                        <div class="avatar">S</div>
+                    </div>
+
+                    <p class="muted">Your complaint overview</p>
+
+                    <div class="stats">
+                        <div class="stat-box">
+                            <span>📋</span>
+                            <strong id="totalCount">0</strong>
+                            <small>Total</small>
+                        </div>
+                        <div class="stat-box">
+                            <span>⏳</span>
+                            <strong id="pendingCount">0</strong>
+                            <small>Pending</small>
+                        </div>
+                        <div class="stat-box">
+                            <span>✓</span>
+                            <strong id="resolvedCount">0</strong>
+                            <small>Resolved</small>
+                        </div>
+                    </div>
+
+                    <div class="preview-title">
+                        <strong>Recent Activity</strong>
+                        <span>Live preview</span>
+                    </div>
+
+                    <div id="recentComplaints" class="recent-list">
+                        <div class="empty-state">
+                            <span>✦</span>
+                            <p>Your complaint activity will appear here.</p>
+                        </div>
+                    </div>
+
+                    <a href="#complaint" class="card-action">
+                        + Create New Complaint
+                    </a>
+                </div>
+
+                <div class="floating-note">
+                    <span class="success-icon">✓</span>
+                    <div>
+                        <strong>Stay informed</strong>
+                        <small>Track every update</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features section" id="features">
+            <div class="section-heading">
+                <span class="eyebrow">WHY HOSTELCARE?</span>
+                <h2>Small issues deserve <span>quick solutions.</span></h2>
+                <p>Everything you need to make hostel life better.</p>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon purple">✎</div>
+                    <h3>Easy Reporting</h3>
+                    <p>Submit maintenance and hostel complaints through a simple form.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon blue">◷</div>
+                    <h3>Track Progress</h3>
+                    <p>Check whether your complaint is pending, in progress, or resolved.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon green">↗</div>
+                    <h3>Clear Updates</h3>
+                    <p>Keep complaint details organized and make progress easy to follow.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="complaint-section section" id="complaint">
+            <div class="section-heading">
+                <span class="eyebrow">WE ARE HERE TO HELP</span>
+                <h2>Tell us what's <span>happening.</span></h2>
+                <p>Describe your issue. We'll help you keep it organized.</p>
+            </div>
+            
+<section class="tracking-section" id="trackComplaint">
+    <div class="section-heading">
+        <p class="eyebrow">COMPLAINT STATUS</p>
+        <h2>Track Your Complaint</h2>
+        <p>Enter your Complaint ID to check the latest status.</p>
+    </div>
+
+    <form id="trackingForm" class="tracking-form">
+        <label for="trackingId">Complaint ID</label>
+        <div class="tracking-input-row">
+            <input
+                type="text"
+                id="trackingId"
+                placeholder="Example: HC-A1B2C3D4"
+                required
+            />
+            <button type="submit">Track Complaint</button>
+        </div>
+        <p id="trackingMessage" role="status"></p>
+        <div id="trackingResult"></div>
+    </form>
+</section>
+
+
+            <form id="complaintForm" class="complaint-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input id="studentName" name="studentName"
+                               type="text" maxlength="60"
+                               placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roomNumber">Room Number</label>
+                        <input id="roomNumber" name="roomNumber"
+                               type="text" maxlength="15"
+                               placeholder="e.g. A-204" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Complaint Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            <option>Electrical</option>
+                            <option>Plumbing / Water</option>
+                            <option>Wi-Fi / Internet</option>
+                            <option>Room Cleaning</option>
+                            <option>Furniture</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority">Priority</label>
+                        <select id="priority" name="priority" required>
+                            <option value="">Select priority</option>
+                            <option>Low</option>
+                            <option>Medium</option>
+                            <option>High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Complaint Description</label>
+                    <textarea id="description" name="description"
+                              rows="4" maxlength="1000"
+                              placeholder="Explain the issue clearly..."
+                              required></textarea>
+                </div>
+
+                <button type="submit" class="primary-btn submit-btn">
+                    Submit Complaint <span>→</span>
+                </button>
+
+                <p id="formMessage" class="form-message" role="status"></p>
+            </form>
+        </section>
+
+        <section class="about-section section" id="about">
+            <div>
+                <span class="eyebrow">BUILT FOR BETTER HOSTEL LIFE</span>
+                <h2>Better communication.<br><span>Better living.</span></h2>
+            </div>
+            <p>
+                HostelCare is a student-focused complaint management
+                application designed to organize hostel issues and make
+                their progress easier to monitor.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <a href="#home" class="logo">
+            <span class="logo-icon">H</span> HostelCare
+        </a>
+        <p>Making hostel life better, one solution at a time.</p>
+        <small>© 2026 HostelCare · Academic Web Technology Project</small>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
